@@ -130,3 +130,86 @@ const employeeeComparison = rankerFunction(
 // console.log(employeeeComparison);
 
 
+interface Microphone {
+    make: string;
+    range: number;
+}
+
+interface Speaker {
+    manufacturer: string;
+    model: string;
+    ports: string[];
+}
+
+interface Box<T> {
+    shelfNo: number;
+    content: T[];
+}
+
+const box1: Box<Speaker> = {
+    shelfNo: 3,
+    content: [
+        {
+            manufacturer: "SubZero",
+            model: "SZPA-P15",
+            ports: ["USBA", "USBC"],
+        },
+    ]
+};
+
+
+interface ToDo {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+}
+
+async function fetchToDos(request: string): Promise<ToDo[]> {
+    const response = await fetch(request);
+    const body = (await response.json()) as ToDo[];
+    return body;
+}
+
+
+
+// Without use of "async" & "await", instead, using "then"
+function getToDosThen(): Promise<ToDo[]> {
+    return fetchToDos("https://jsonplaceholder.typicode.com/todos");
+}
+
+function getCompletedToDosThen(): Promise<string[]> {
+    return getToDos()
+        .then((todos) => todos.filter((todo) => todo.completed))
+        .then((completedTodos) => completedTodos.map((todo) => todo.title));
+}
+
+getToDosThen().then((todos) => {
+    console.log("All ToDos:", todos);
+});
+
+getCompletedToDosThen().then((completedToDos) => {
+    console.log("Completed ToDos:", completedToDos);
+});
+
+
+// With the use of "async" and "await"
+async function getToDos(): Promise<ToDo[]> {
+    return await fetchToDos("https://jsonplaceholder.typicode.com/todos");
+}
+
+async function getCompletedToDos(): Promise<string[]> {
+    return (await getToDos())
+        .filter((todo) => todo.completed)
+        .map((todo) => todo.title);
+}
+
+async function printToDos() {
+    const todos = await getToDos();
+    console.log(todos);
+
+    const completedToDos = await getCompletedToDos();
+    console.log(completedToDos);
+}
+
+printToDos();
